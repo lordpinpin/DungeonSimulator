@@ -4,19 +4,16 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 class DungeonQueue {
-    private final int maxInstances;
     private final Semaphore instanceSlots;
     private final boolean[] instanceStatus;
     private final Object lock = new Object();
 
     private long servedParties = 0;
-    private long startTime;
-    private long endTime;
+    private final long startTime;
 
     private final Queue<String> logMessages = new ConcurrentLinkedQueue<>();
 
     public DungeonQueue(int maxInstances) {
-        this.maxInstances = maxInstances;
         this.instanceSlots = new Semaphore(maxInstances);
         this.instanceStatus = new boolean[maxInstances];
         this.startTime = System.currentTimeMillis(); // Start timer at creation
@@ -109,7 +106,7 @@ class DungeonQueue {
     }
 
     public void printSummary() {
-        endTime = System.currentTimeMillis(); // Capture end time
+        long endTime = System.currentTimeMillis(); // Capture end time
         long totalElapsedTime = (endTime - startTime) / 1000; // Convert to seconds
 
         synchronized (lock) {
@@ -131,7 +128,9 @@ class PlayerQueue {
     private final DungeonQueue dungeonQueue;
     private final List<Thread> partyThreads = new ArrayList<>();
 
-    private long initialTanks, initialHealers, initialDps; // To track initial values
+    private final long initialTanks;
+    private final long initialHealers;
+    private final long initialDps; // To track initial values
 
     public PlayerQueue(long tanks, long healers, long dps, DungeonQueue dungeonQueue) {
         this.tanks = tanks;
